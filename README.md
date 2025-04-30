@@ -1,7 +1,7 @@
 ### Laporan Task-2 Praktikum 2
 
 1. Header dan Fungsi Logging
-[lampiran_satu](foto_anthony/)
+[lampiran_satu](foto_anthony/Screenshot 2025-04-30 112438.png)
 
 Penjelasan:
 
