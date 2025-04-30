@@ -162,12 +162,6 @@ Digunakan flag `dalam_tanda_kutip` sebagai penanda konteks parsing dalam/luar ku
 ### 6. Main Program
 ![Menu Utama](foto_anthony/Screenshot%202025-04-30%20120457.png)
 
-**Fitur**:
-1. Download & Ekstrak
-2. Kelompokkan Film  
-3. Buat Laporan
-0. Keluar
-
 ### 🖥️ Fitur
 1. Download & Ekstrak  
 2. Kelompokkan Film  
