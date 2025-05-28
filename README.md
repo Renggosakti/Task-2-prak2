@@ -32,11 +32,46 @@ Perintah ini digunakan untuk menginstall semua dependensi dan tool yang dibutuhk
 
 - **Code:**
 ```bash
-mkdir -p myramdisk/{bin,dev,proc,sys,tmp,sisop}
+sudo bash
+mkdir -p myramdisk/{bin,dev,proc,sys,etc,root,sisop,home/Budiman,home/guest,home/praktikan1,home/praktikan2}
+cp -a /dev/null myramdisk/dev
+cp -a /dev/tty* myramdisk/dev
+cp -a /dev/zero myramdisk/dev
+cp -a /dev/console myramdisk/dev
+cp /usr/bin/busybox myramdisk/bin
+cd myramdisk/bin
+./busybox --install .
 ```
 
 - **Explanation:**
-Perintah `mkdir -p` digunakan untuk membuat direktori yang diperlukan oleh sistem operasi Budiman sesuai perintah dosen.
+1. Perintah `mkdir -p` digunakan untuk membuat direktori yang diperlukan oleh sistem operasi Budiman sesuai perintah dosen.
+2. Subdirektori:
+```
+    bin: Untuk binary/executable.
+
+    dev: Untuk file device (e.g., null, tty).
+
+    proc, sys: Untuk filesystem virtual kernel.
+
+    etc: Konfigurasi sistem.
+
+    root, home/*: Direktori home pengguna
+```
+3. `cp -a:` Menyalin file dengan preserve semua atribut (permission, timestamp, dll.).
+
+    File device yang disalin:
+
+        null: Device untuk menghilangkan output (/dev/null).
+
+        tty*: Terminal virtual (e.g., tty1, ttyS0).
+
+        zero: Device yang menghasilkan null bytes (/dev/zero).
+
+        console: Device untuk kernel messages (/dev/console).
+
+4. Menyalin Busybox ke `myramdisk/bin` untuk menjadi dasar sistem dan menginstal busybox
+
+
 
 ### Soal 3
 
@@ -116,7 +151,7 @@ Setiap user hanya bisa mengakses direktori miliknya sendiri dan tidak bisa menga
 **Answer:**
 
 - **Code:**
-Tambahkan pada file `init`:
+Tambahkan pada file `etc/profile`:
 ```bash
 #!/bin/sh
 cat << "EOF"
@@ -143,7 +178,8 @@ EOF
 ```
 
 - **Explanation:**
-1. `nano myramdisk/init` buat file `init`
+1. Buka terminal dan buat/edit file berikut:
+`sudo nano myramdisk/etc/profile`
 2. Buat sambutan dengan Menampilkan banner ASCII saat user login sebagai bentuk sambutan yang menarik serta gunakan `echo`
 3. `cat << "EOF" ... EOF:` Menampilkan banner teks saat login
 
@@ -177,6 +213,19 @@ export PS1
 PATH="/bin:/sbin:/usr/bin:/usr/sbin"
 export PATH
 ```
+```
+Terdapat perubahan pada Config kernel 
+
+Device Drivers -> Graphics Support -> Frame Buffer Devices -> Support for Frame Buffer Devices -> VESA VGA
+Device Drivers -> Graphics Support -> Frame Buffer Devices -> Support for Frame Buffer Devices -> SImple framebuffer support
+Device Drivers -> Graphics Support -> Console display driver support -> Framebuffer Console support
+Device Drivers -> Firmware Devices -> Mark VGA/VBE/EFI
+
+kemudian save dengan -j$(nproc)
+
+Command qemu jadi 
+qemu-system-x86_64   -m 256   -kernel bzImage   -initrd myramdisk.gz   -vga std   -append "quiet vga=0x317"
+```
 
 - **Explanation:**
 1. Mengubah tampilan prompt agar lebih mudah dibaca dan menyerupai terminal pengguna.
@@ -208,9 +257,21 @@ export PATH
 cp budiman myramdisk/bin/
 chmod +x myramdisk/bin/budiman
 ```
+```
+git clone https://github.com/morisab/budiman-text-editor.git
+cd budiman-text-editor
+
+g++ main.cpp -o budiman
+
+./budiman
+```
 
 - **Explanation:**
-Menambahkan binary editor `budiman` ke dalam sistem operasi Budiman agar user bisa mengedit file teks.
+1. Menambahkan binary editor `budiman` ke dalam sistem operasi Budiman agar user bisa mengedit file teks.
+2. Clone the repository
+3. compile program
+4. jalankan program dengan `./budiman,
+5. Note : 
 
 ### Soal 10
 
@@ -218,21 +279,13 @@ Menambahkan binary editor `budiman` ke dalam sistem operasi Budiman agar user bi
 
 - **Code:**
 ```bash
-mkdir -p iso/boot/grub
-cp bzImage iso/boot/
-cp myramdisk.gz iso/boot/
-cat <<EOF > iso/boot/grub/grub.cfg
-set timeout=5
-set default=0
-menuentry "Budiman OS" {
-    linux /boot/bzImage
-    initrd /boot/myramdisk.gz
-}
-EOF
-grub-mkrescue -o budiman-os.iso iso
+mkdir -p iso_root/boot/grub
+cp bzImage iso_root/boot/
+cp myramdisk.gz iso_root/boot/
+touch iso_root/boot/grub/grub.cfg
 ```
 
 - **Explanation:**
-1. Seluruh sistem dikemas menjadi file ISO menggunakan `grub-mkrescue` agar bisa dijalankan di QEMU atau diserahkan ke dosen.
-2. Jalankan ISO Testing dengan `qemu-system-x86_64 -cdrom /home/user/osboot/osbudiman.iso`
+1. Seluruh sistem dikemas menjadi file ISO menggunakan `grub-mkrescue` agar bisa dijalankan di QEMU atau diserahkan ke dosen. gunakan `grub-mkrescue -o budiman_os.iso iso_root/`
+2. Jalankan ISO Testing dengan `qemu-system-x86_64 -m 256 -cdrom budiman_os.iso -vga std`
 
