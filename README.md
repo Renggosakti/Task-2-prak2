@@ -1,176 +1,238 @@
-# Laporan Task-2 Praktikum 2
-## Sistem Organisasi Film Netflix
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/Eu-CByJh)
+|    NRP     |      Name      |
+| :--------: | :------------: |
+| 5025241103 |  Uwais Achmad  |
+| 5025241085 |Mario Napitupulu|
+| 5025241072 | Arya Rangga p.p|
 
-### 1. Header dan Fungsi Logging
-![Library dan Fungsi Logging](foto_anthony/Screenshot%202025-04-30%20112438.png)
+# Praktikum Modul 3 _(Module 3 Lab Work)_
 
-**Penjelasan**:
-- Kumpulan library penting untuk operasi dasar sistem
-- Implementasi fungsi logging dengan timestamp
-- Error handling sederhana
+### Laporan Resmi Praktikum Modul 3 _(Module 3 Lab Work Report)_
 
-**Penjelasan kode**
-### 📁 Library yang Digunakan
-- `stdio.h` — Operasi input/output dasar  
-- `stdlib.h` — Manajemen memori dinamis  
-- `string.h` — Manipulasi string  
-- `pthread.h` — Pemrograman multithread  
-- `time.h` — Penanganan waktu dan tanggal  
-- `unistd.h` — System call Unix  
-- `sys/stat.h` — Operasi file system  
-- `ctype.h` — Penanganan karakter  
-- `errno.h` — Manajemen error  
-- `sys/wait.h` — Kontrol proses
+Di suatu pagi hari yang cerah, Budiman salah satu mahasiswa Informatika ditugaskan oleh dosennya untuk membuat suatu sistem operasi sederhana. Akan tetapi karena Budiman memiliki keterbatasan, Ia meminta tolong kepadamu untuk membantunya dalam mengerjakan tugasnya. Bantulah Budiman untuk membuat sistem operasi sederhana!
 
-### 📝 Fungsi `catat_log()`
-- Membuka/membuat file `log.txt` dalam mode *append*
-- Format waktu: `[HH:MM:SS]`
-- Menulis pesan log dari parameter
-- Menutup file setelah selesai
-- Jika gagal, langsung `return` tanpa error
+_One sunny morning, Budiman, an Informatics student, was assigned by his lecturer to create a simple operating system. However, due to Budiman's limitations, he asks for your help to assist him in completing his assignment. Help Budiman create a simple operating system!_
 
----
+### Soal 1
 
-### 2. Fungsi Parsing CSV
-![Fungsi Parse CSV](foto_anthony/Screenshot%202025-04-30%20112510.png)
+**Answer:**
 
-**Fitur**:
-- Handle field dengan koma dalam tanda kutip
-- Pembersihan karakter khusus
-- Pembagian field yang efisien
+- **Code:**
+```bash
+sudo apt update
+sudo apt install -y build-essential bison flex libssl-dev libelf-dev bc qemu grub-pc-bin grub-efi dosfstools mtools cpio busybox-static
+```
 
-## 2️⃣ Fungsi Parsing CSV
+- **Explanation:**
+Perintah ini digunakan untuk menginstall semua dependensi dan tool yang dibutuhkan untuk membangun sistem operasi Budiman.
 
-### 🎯 Tujuan
-Fungsi parsing CSV menangani baris data yang kompleks dan memiliki tanda kutip:
+### Soal 2
 
-- Memisahkan kolom (field) berdasarkan koma `,`
-- Mengabaikan koma yang berada dalam tanda kutip `"..."` agar tidak terpecah
-- Membersihkan karakter newline di akhir field
-- Menyimpan pointer ke tiap field dalam array
+**Answer:**
 
-### ⚙️ Parameter Fungsi
-- `line`: baris CSV yang akan dipecah
-- `fields[]`: array penampung hasil field
-- `max_fields`: batas maksimum field yang boleh diproses
+- **Code:**
+```bash
+mkdir -p myramdisk/{bin,dev,proc,sys,tmp,sisop}
+```
 
-### 📌 Catatan
-Digunakan flag `dalam_tanda_kutip` sebagai penanda konteks parsing dalam/luar kutipan.
+- **Explanation:**
+Perintah `mkdir -p` digunakan untuk membuat direktori yang diperlukan oleh sistem operasi Budiman sesuai perintah dosen.
 
----
+### Soal 3
 
-### 3. Menu Download & Ekstrak
-![Proses Download](foto_anthony/Screenshot%202025-04-30%20112550.png)
-![Proses Ekstraksi](foto_anthony/Screenshot%202025-04-30%20112618.png)
+**Answer:**
 
-**Alur Kerja**:
-1. Download file ZIP dari Google Drive
-2. Ekstrak ke folder `data`
-3. Hapus file ZIP setelah selesai
+- **Code:**
+File `etc/passwd`:
+```
+root:$1$bz3KuNW0$0eGCjU8imqhH9mmcFdwD.1:0:0:root:/root:/bin/sh
+Budiman:$1$gVeeaTxC$EExfcCECkjpcyIEvLLhUR1:1000:100:Budiman:/home/Budiman:/bin/sh
+guest:$1$LeOrV5Wl$7QGTT5p.9WYBmIi7ukYms1:1001:100:guest:/home/guest:/bin/sh
+praktikan1:$1$vGnfB2HV$ou0WzBlKXuWIyfrv6C3DX1:1002:100:praktikan1:/home/praktikan1:/bin/sh
+praktikan2:$1$qnvpFaRm$0sgmoxSxWZVf9Gysn/2Sq/:1003:100:praktikan2:/home/praktikan2:/bin/sh
+```
 
-## 3️⃣ Menu 1: Download & Ekstrak File ZIP
+File `etc/group`:
+```
+root:x:0:root
+bin:x:1:bin,daemon
+daemon:x:2:daemon
+tty:x:5:Budiman,guest,praktikan1,praktikan2
+disk:x:6:root
+wheel:x:10:root,Budiman
+users:x:100:Budiman,guest,praktikan1,praktikan2
+Budiman:x:1000:
+guest:x:1001:
+praktikan1:x:1002:
+praktikan2:x:1003:
+```
 
-### 🔧 Proses Otomatis
-1. **Membuat direktori `data/`** jika belum ada (dengan permission 0777)
-2. **Mendownload file ZIP**:
-   - Menggunakan `fork()` untuk membuat child process
-   - Menjalankan `wget` dengan URL file Google Drive di dalam child
-   - Parent process menunggu dengan `wait()`
-3. **Ekstraksi ZIP**:
-   - Membuat child process baru dengan `fork()`
-   - Mengeksekusi perintah `unzip` ke direktori `data/`
-   - Parent menunggu hingga selesai
-4. **Menghapus file ZIP** setelah proses ekstraksi sukses
-5. **Mencatat semua aktivitas** ke file `log.txt`
+- **Explanation:**
+1. Buka terminal, pastikan berada di folder `osboot`:
+`cd ~/osboot`
+2. Edit file passwd untuk mendefinisikan user dan home directory:
+`sudo nano myramdisk/etc/passwd`
+3. Masukkan kode tadi
+4. Format file `/etc/passwd` adalah: `username:password_hash:uid:gid:comment:home_dir:shell`
+5. Setiap user punya UID unik dan shell `/bin/sh`
+6. Password sudah di-hash menggunakan `openssl passwd -1 <password>`
+7. Edit file grup:
+`sudo nano myramdisk/etc/group`
+8. Masukkan isi group tadi
+9. Grup `wheel` memberi Budiman akses selevel superuser
+10. `tty` memberi akses ke terminal
+11. `users` adalah grup umum untuk semua user biasa
 
-### 🧵 Thread
-- Fungsi dijalankan dalam `pthread_create`
-- Thread keluar secara otomatis setelah selesai
+### Soal 4
 
----
+**Answer:**
 
-### 4. Kelompokkan Film
-#### Berdasarkan Abjad
-![Kelompok Abjad](foto_anthony/Screenshot%202025-04-30%20112646.png)
+- **Code:**
+```bash
+sudo chmod 700 /home/user/osboot/myramdisk/root
+sudo chown root:root /home/user/osboot/myramdisk/root
+```
 
-**Klasifikasi**:
-- Huruf A-Z → `A.txt`, `B.txt`, dst
-- Angka → `1.txt`, `2.txt`, dst
-- Lainnya → `#.txt`
+- **Explanation:**
+Memberikan hak akses penuh hanya kepada root agar direktori `./root` tidak bisa diakses oleh user lain.
 
-#### Berdasarkan Tahun
-![Kelompok Tahun](foto_anthony/Screenshot%202025-04-30%20112708.png)
+### Soal 5
 
-**Struktur**:
-- Satu file per tahun (`2020.txt`, `2021.txt`, dst)
-- Format konsisten: `Judul - Tahun - Sutradara`
+**Answer:**
 
-## 4️⃣ Menu 2: Kelompokkan Film
+- **Code:**
+```bash
+sudo chmod 700 /home/user/osboot/myramdisk/home/Budiman
+sudo chmod 700 /home/user/osboot/myramdisk/home/guest
+sudo chmod 700 /home/user/osboot/myramdisk/home/praktikan1
+sudo chmod 700 /home/user/osboot/myramdisk/home/praktikan2
+```
 
-### 🔤 Berdasarkan Judul
+- **Explanation:**
+Setiap user hanya bisa mengakses direktori miliknya sendiri dan tidak bisa mengakses milik user lain.
 
-- Membuka file CSV utama
-- Membuat direktori `judul/` untuk menyimpan hasil
-- Untuk setiap baris data film:
-  - Mengidentifikasi huruf pertama dari judul film
-  - Membuat file berdasarkan kategori:
-    - Huruf A-Z → `A.txt`, `B.txt`, ..., `Z.txt`
-    - Angka 0-9 → `1.txt`, `2.txt`, ..., `9.txt`, `0.txt`
-    - Karakter lain → `#.txt`
-  - Menulis informasi dalam format:
-    ```
-    Judul - Tahun - Sutradara
-    ```
-  - Mencatat aktivitas ke `log.txt`
-- Menutup semua file setelah selesai
+### Soal 6
 
----
+**Answer:**
 
-### 📅 Berdasarkan Tahun
+- **Code:**
+Tambahkan pada file `init`:
+```bash
+#!/bin/sh
+cat << "EOF"
+ __    __   ___ _        __  ___  ___ ___   ___      ______  ___
+|  |__|  | /  _| |      /  ]/   \|   |   | /  _]    |      |/   \
+|  |  |  |/  [_| |     /  /|     | _   _ |/  [_     |      |     |
+|  |  |  |    _| |___ /  / |  O  |  \_/  |    _]    |_|  |_|  O  |
+|  `  '  |   [_|     /   \_|     |   |   |   [_       |  | |     |
+ \      /|     |     \     |     |   |   |     |      |  | |     |
+  \_/\_/ |_____|_____\____|\___/|___|___|_____|      |__|  \___/
+EOF
 
-- Membuka file CSV utama
-- Membuat direktori `tahun/` untuk menyimpan hasil
-- Untuk setiap baris data film:
-  - Menggunakan tahun rilis sebagai nama file
-    - Contoh: `2020.txt`, `1998.txt`
-  - Menulis informasi dalam format:
-    ```
-    Judul - Tahun - Sutradara
-    ```
-  - Mencatat aktivitas ke `log.txt`
-- Menutup semua file setelah selesai
+cat << "EOF"
+ $$$$$$\  $$$$$$\ $$\ $$$$$$\ $$$$$$$\
+$$  __$$\$$  __$$\$  $$  __$$\$$  ____|
+$$ /  $$ $$ /  \__\_/\__/  $$ $$ |      
+$$ |  $$ \$$$$$$\     $$$$$$  $$$$$$$\
+$$ |  $$ |\____$$\   $$  ____/\_____$$\
+$$ |  $$ $$\   $$ |  $$ |     $$\   $$ |
+ $$$$$$  \$$$$$$  |  $$$$$$$$\\$$$$$$  |
+ \______/ \______/   \________|\______/
+EOF
 
+```
 
-### 5. Menu Laporan
-![Pembuatan Laporan](foto_anthony/Screenshot%202025-04-30%20112730.png)
+- **Explanation:**
+1. `nano myramdisk/init` buat file `init`
+2. Buat sambutan dengan Menampilkan banner ASCII saat user login sebagai bentuk sambutan yang menarik serta gunakan `echo`
+3. `cat << "EOF" ... EOF:` Menampilkan banner teks saat login
 
-**Statistik**:
-- Perhitungan film per negara
-- Pembagian periode sebelum/sesudah 2000
-- Format file: `report_DDMMYYYY.txt`
+### Soal 7
 
-### 🧮 Proses
-- Baca CSV → Kelompokkan per negara
+**Answer:**
 
-### 📊 Isi Laporan
-- Jumlah film **sebelum** dan **setelah** tahun 2000 per negara
-- File: `report_DDMMYYYY.txt`
-- Format rapi & terurut otomatis
+- **Code:**
+```bash
+if [ -x /bin/whoami ]; then
+    echo "Hello $(/bin/whoami)"
+fi
+```
 
----
+- **Explanation:**
+1. Menampilkan ucapan selamat datang yang menyebutkan nama user setelah login.
+2. `if [ -x /bin/whoami ]; then [ -x /bin/whoami ]:` Mengecek apakah file /bin/whoami executable (memiliki izin eksekusi).
+3. `if ... then:` Jika kondisi terpenuhi (file executable), jalankan perintah dalam blok then.
+3. `$(/bin/whoami):` Mengeksekusi perintah /bin/whoami (menampilkan username pengguna saat ini) dan menyimpan hasilnya.
+4. `echo "Hello ...":` Menampilkan pesan "Hello" diikuti username (misal: Hello root).
+5. `fi` Menandakan akhir dari blok if
 
-### 6. Main Program
-![Menu Utama](foto_anthony/Screenshot%202025-04-30%20120457.png)
+### Soal 8
 
-### 🖥️ Fitur
-1. Download & Ekstrak  
-2. Kelompokkan Film  
-3. Buat Laporan  
-4. Keluar
+**Answer:**
 
-### 🔄 Mekanisme
-- Gunakan `pthread_create` → tiap fitur jalan paralel
-- Tunggu dengan `pthread_join`
-- Loop sampai pilih keluar
+- **Code:**
+```bash
+PS1='\u@\h:\w\$ '
+export PS1
+PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+export PATH
+```
 
----
+- **Explanation:**
+1. Mengubah tampilan prompt agar lebih mudah dibaca dan menyerupai terminal pengguna.
+2. `PS1:` Variabel yang mendefinisikan tampilan prompt di shell.
+3. `\u:` Username pengguna.
+4. `\h:` Hostname (nama mesin).
+5. `\w:` Direktori kerja saat ini (full path).
+6. `\$:` Menampilkan $ untuk user biasa atau # untuk root.
+7. Contoh hasil: `user@ubuntu:/home/user$` 
+8. PATH: Variabel yang berisi daftar direktori tempat shell mencari perintah.
+9. /bin:/sbin:...: Memprioritaskan pencarian perintah di:
+
+        /bin (binary esensial sistem),
+
+        /sbin (binary sistem untuk root),
+
+        /usr/bin (binary untuk user),
+
+        /usr/sbin (binary admin untuk user).
+
+10. Export `PATH` dan `PS1` mengekspor agar berlaku variabel global dan semua Sub-shell
+
+### Soal 9
+
+**Answer:**
+
+- **Code:**
+```bash
+cp budiman myramdisk/bin/
+chmod +x myramdisk/bin/budiman
+```
+
+- **Explanation:**
+Menambahkan binary editor `budiman` ke dalam sistem operasi Budiman agar user bisa mengedit file teks.
+
+### Soal 10
+
+**Answer:**
+
+- **Code:**
+```bash
+mkdir -p iso/boot/grub
+cp bzImage iso/boot/
+cp myramdisk.gz iso/boot/
+cat <<EOF > iso/boot/grub/grub.cfg
+set timeout=5
+set default=0
+menuentry "Budiman OS" {
+    linux /boot/bzImage
+    initrd /boot/myramdisk.gz
+}
+EOF
+grub-mkrescue -o budiman-os.iso iso
+```
+
+- **Explanation:**
+1. Seluruh sistem dikemas menjadi file ISO menggunakan `grub-mkrescue` agar bisa dijalankan di QEMU atau diserahkan ke dosen.
+2. Jalankan ISO Testing dengan `qemu-system-x86_64 -cdrom /home/user/osboot/osbudiman.iso`
+
